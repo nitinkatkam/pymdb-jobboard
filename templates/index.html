@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <ul class="job-postings">
+        {% for job in jobs %}
+            <li {{ ('style="background-color: #ccc"' if job.status != 'Approved' else '')|safe }}>
+                <span class="tag is-info">{{ job.type }}</span>
+                &nbsp;
+                <a href="{{ job.href }}">
+                <strong>{{ job.title }}</strong>
+                </a>
+                &nbsp;
+                <i>{{ job.location }}</i>
+                &nbsp;
+                {{ job.org }}
+
+                {% for tag in job.tags %}
+                &nbsp;
+                <span class="tag is-info is-light">{{ tag }}</span>
+                {% endfor %}
+
+                <span class="is-pulled-right">
+                    {{ job.postedon.strftime('%Y-%m-%d') }}
+                </span>
+
+                {% if 'username' in session and session['username'] != None and session['username'] != '' %}
+                &nbsp;<a href="post?id={{ job._id }}">Edit</a>
+                {% endif%}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

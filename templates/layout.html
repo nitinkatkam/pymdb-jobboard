@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Job Board</title>
+    <link rel="stylesheet" href="/static/css/bulma.min.css" /><!-- Bulma v0.8.0 -->
+    <link rel="stylesheet" href="/static/css/style.css?t=202002202132" />
+    <script defer src="/static/js/all.js"></script><!-- FontAwesome v5.3.1 -->
+    <script defer src="/static/js/navmenu.js"></script><!-- Nav. menu for Bulma -->
+    <style>
+        ul.job-postings li {
+            padding: 5px 0;
+            line-height: 40px;
+            border-top: solid 1px #eee;
+            clear: both;
+        }
+
+        ul.job-postings li:first-child {
+          border-top: none;
+        }
+
+        .navbar.is-link {
+          background-color: #3298dc;
+        }
+    </style>
+    </head>
+    <body>
+
+
+    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <span class="navbar-item">
+          Job Board
+        </span>
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="mainNavBar">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div id="mainNavBar" class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item" href="/">
+            Home
+          </a>
+          <a class="navbar-item" href="/post">
+            Post
+          </a>
+
+          {% if not 'username' in session or session['username'] == '' or session['username'] == None %}
+          <a class="navbar-item" href="/login">
+            Admin Login
+          </a>
+          {% else %}
+            <a class="navbar-item" href="#" onclick="document.getElementById('logout_form').submit(); return false;">Logout</a>
+          <form method="post" action="/logout" id="logout_form">
+<!--            <input type="submit" class="navbar-item" value="Logout" />-->
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+
+
+    <section class="section" style="padding: 0.5rem 1.5rem">
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    </section>
+
+    </body>
+</html>

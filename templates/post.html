@@ -1,0 +1,82 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1 class="title">Post Job</h1>
+
+<form method="post" action="#">
+    {% if job != None %}
+    <input type="hidden" name="_id" value="{{ job._id }}" />
+    {% endif %}
+
+    <div class="field">
+        <label class="label" for="title_input">Title</label>
+        <div class="control" style="width: 300px;">
+        <input class="input" type="text" placeholder="Title" id="title_input" name="title" value="{{ job.title if job != None else '' }}" />
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="postedby_input">Your Name</label>
+        <div class="control" style="width: 300px;">
+        <input class="input" type="text" placeholder="Your Name" id="postedby_input" name="postedby" value="{{ job.postedby if job != None else '' }}" />
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="org_input">Organization</label>
+        <div class="control" style="width: 300px;">
+        <input class="input" type="text" placeholder="Organization" id="org_input" name="org" value="{{ job.org if job != None else '' }}" />
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="location_input">Location</label>
+        <div class="control" style="width: 300px;">
+        <input class="input" type="text" placeholder="Title" id="location_input" name="location" value="{{ job.location if job != None else '' }}" />
+        </div>
+    </div>
+
+<!--
+    <div class="field">
+        <label class="label" for="description_input">Description</label>
+        <div class="control" style="width: 300px;">
+        <input class="input" type="text" placeholder="Title" id="description_input" name="description" />
+        </div>
+    </div>
+-->
+
+    <div class="field">
+        <label class="label" for="title_input">Type</label>
+        <div class="select">
+        <select id="type_input" name="type" style="width: 300px;">
+            <option {{ 'selected="selected"' if job != None and job.type == 'Full-Time' else '' }}>Full-Time</option>
+            <option {{ 'selected="selected"' if job != None and job.type == 'Part-Time' else '' }}>Part-Time</option>
+            <option {{ 'selected="selected"' if job != None and job.type == 'Freelance' else '' }}>Freelance</option>
+        </select>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="href_input">URL</label>
+        <div class="control" style="width: 300px;">
+        <input class="input" type="text" placeholder="URL" id="href_input" name="href" value="{{ job.href if job != None else '' }}" />
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="tags_input">Tags</label>
+        <div class="control" style="width: 300px;">
+        <input class="input" type="text" placeholder="Tags" id="tags_input" name="tags" value="{{ ', '.join(job.tags) if job != None else '' }}" />
+        </div>
+    </div>
+
+    <input type="submit" class="button is-link" value="Post" />
+</form>
+
+{% if job != None and not ( not 'username' in session or session['username'] == '' or session['username'] == None) %}
+<form method="post" action="/webstatus/{{ job._id }}/Approved" style="display: inline;">
+    <input type="submit" class="button is-link" value="Approve" style="margin-top: 15px;" />
+</form>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1 class="title">Login</h1>
+
+<p>
+    {{ request.args['error'] if 'error' in request.args else '' }}
+</p>
+
+<form method="post" action="/login">
+    <div class="field">
+        <label class="label" for="username_input">Username</label>
+        <div class="control" style="width: 300px;">
+        <input class="input" type="text" placeholder="Username" id="username_input" name="username" />
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="password_input">Password</label>
+        <div class="control" style="width: 300px;">
+        <input class="input" type="password" placeholder="Password" id="password_input" name="password" />
+        </div>
+    </div>
+
+    <input type="submit" class="button is-link" value="Login" />
+</form>
+{% endblock %}
