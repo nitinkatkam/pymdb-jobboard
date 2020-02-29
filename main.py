@@ -6,9 +6,13 @@ from datetime import date, datetime
 import string
 import random
 import smtplib
+import configparser
 
 app = Flask(__name__)
 sess = Session()
+config = configparser.ConfigParser()
+config.read('config.ini')
+
 
 def send_review_email(id, status, token):
     server = smtplib.SMTP('localhost', 25)
@@ -22,10 +26,21 @@ def send_review_email(id, status, token):
     pass
 
 
+def get_db_connection():
+    client = MongoClient(
+        host=config['db'].get('host', '127.0.0.1'),
+        port=config['db'].get('port', 27017),
+        username=config['db'].get('user') if 'None' != config['db']['authType'] else None,
+        password=config['db'].get('password') if 'None' != config['db']['authType'] else None,
+        authSource=config['db'].get('authSource', 'admin') if 'None' != config['db']['authType'] else 'admin',
+        # authMechanism=config['db'].get('authMechanism', 'SCRAM-SHA-256') if 'None' != config['db']['authType'] else 'SCRAM-SHA-256',
+    )
+    return client[config['db'].get('dbname', 'test')]
+
+
 @app.route('/data')
 def data():
-    client = MongoClient()
-    db = client['test']
+    db = get_db_connection()
     jobsarr = db['jobposting'].find()
     return jsonify(jobsarr)
 
@@ -33,12 +48,11 @@ def data():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        client = MongoClient()
-        db = client['test']
+        db = get_db_connection()
         usercnt = db['users'].count()
         user = db['users'].find_one({'_id': request.form['username']})
         if (user is not None and user['password'] == request.form['password']) \
-                or (usercnt == 0 and request.form['username'] == 'root' and request.form['password'] == 'kat'):
+                or (usercnt == 0 and request.form['username'] == 'root' and request.form['password'] == 'katkam'):
             session['username'] = request.form['username']
             return redirect('/')
         else:
@@ -55,8 +69,7 @@ def logout():
 
 # @app.route('/status/<id>/<status>/<token>')
 # def email_status(id, status, token):
-#     client = MongoClient()
-#     db = client['test']
+#     db = get_db_connection()
 #     db['jobposting'].update_one({'_id': bson.ObjectId(id), 'token': token}, {'$set': {'status': status}})
 #     return redirect('/')
 
@@ -65,16 +78,14 @@ def logout():
 def web_status(id, status):
     if not is_logged_in():
         return redirect('/login')
-    client = MongoClient()
-    db = client['test']
+    db = get_db_connection()
     db['jobposting'].update_one({'_id': bson.ObjectId(id)}, {'$set': {'status': status}})
     return redirect('/')
 
 
 @app.route('/')
 def home():
-    client = MongoClient()
-    db = client['test']
+    db = get_db_connection()
     if is_logged_in():
       jobsarr = db['jobposting'].find()
     else:
@@ -88,8 +99,7 @@ def is_logged_in():
 
 @app.route('/post', methods=['POST', 'GET'])
 def post():
-    client = MongoClient()
-    db = client['test']
+    db = get_db_connection()
     if request.method == 'POST':
         data = request.form.to_dict()
 
@@ -135,7 +145,11 @@ if __name__ == '__main__':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem' #redis, memcached, filesystem or mongodb
     sess.init_app(app)
-    app.run(debug=True)
+    app.run(
+        host=config['http'].get('bindip', '0.0.0.0'),
+        port=config['http'].get('port', '5000'),
+        debug=config['app'].get('debug', True)
+    )
 
 
 #    return redirect(url_for('static', filename='post.html'), code=302)

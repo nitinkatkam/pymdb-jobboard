@@ -1,0 +1,16 @@
+[app]
+#debug
+
+[db]
+host=127.0.0.1
+post=27017
+authType=None
+user=None
+password=None
+authSource=None
+authMechanism=None
+dbname=test
+
+[http]
+#bindip=
+port=4565
