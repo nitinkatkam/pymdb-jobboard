@@ -29,7 +29,7 @@ def send_review_email(id, status, token):
 def get_db_connection():
     client = MongoClient(
         host=config['db'].get('host', '127.0.0.1'),
-        port=config['db'].get('port', 27017),
+        port=int(config['db'].get('port', 27017)),
         username=config['db'].get('user') if 'None' != config['db']['authType'] else None,
         password=config['db'].get('password') if 'None' != config['db']['authType'] else None,
         authSource=config['db'].get('authSource', 'admin') if 'None' != config['db']['authType'] else 'admin',
@@ -87,9 +87,9 @@ def web_status(id, status):
 def home():
     db = get_db_connection()
     if is_logged_in():
-      jobsarr = db['jobposting'].find()
+      jobsarr = db['jobposting'].find().sort('_id', -1).limit(50)
     else:
-      jobsarr = db['jobposting'].find({'status': 'Approved'})
+      jobsarr = db['jobposting'].find({'status': 'Approved'}).sort('_id', -1).limit(50)
     return render_template('index.html', jobs=jobsarr)
 
 
