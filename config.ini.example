@@ -3,7 +3,7 @@
 
 [db]
 host=127.0.0.1
-post=27017
+port=27017
 authType=None
 user=None
 password=None
